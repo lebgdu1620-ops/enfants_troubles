@@ -1,0 +1,73 @@
+{% extends 'app/base.html' %}
+{% block titre %}Créer un profil{% endblock %}
+{% block content %}
+<div class="carte" style="margin-top:30px; max-width:500px; margin-left:auto; margin-right:auto;">
+    <h1>👤 Créer un profil</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div style="margin-bottom:20px;">
+            <label style="font-size:1.1rem; display:block; margin-bottom:8px;">
+                Prénom :
+            </label>
+            <input type="text" name="prenom" required
+                style="width:100%; padding:12px; font-size:1.1rem;
+                       border:2px solid #ddd; border-radius:10px;
+                       font-family:inherit;">
+        </div>
+        <div style="margin-bottom:20px;">
+            <label style="font-size:1.1rem; display:block; margin-bottom:8px;">
+                Nom :
+            </label>
+            <input type="text" name="nom" required
+                style="width:100%; padding:12px; font-size:1.1rem;
+                       border:2px solid #ddd; border-radius:10px;
+                       font-family:inherit;">
+        </div>
+        <div style="margin-bottom:25px;">
+            <label style="font-size:1.1rem; display:block; margin-bottom:10px;">
+                Choisir un avatar :
+            </label>
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                {% for av in avatars %}
+                <label style="cursor:pointer;">
+                    <input type="radio" name="avatar" value="{{ av }}"
+                           style="display:none;" class="radio-avatar"
+                           {% if forloop.first %}checked{% endif %}>
+                    <div class="avatar-option" style="
+                        font-size:2.5rem;
+                        padding:10px;
+                        border-radius:10px;
+                        border: 3px solid transparent;
+                        transition: all 0.2s;
+                    ">{{ av }}</div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        <div style="text-align:center;">
+            <button type="submit" class="btn btn-vert">
+                ✅ Créer le profil
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.radio-avatar').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('.avatar-option').forEach(div => {
+            div.style.border = '3px solid transparent';
+            div.style.background = 'transparent';
+        });
+        this.nextElementSibling.style.border = '3px solid #4CAF50';
+        this.nextElementSibling.style.background = '#f0fff0';
+    });
+    if (radio.checked) {
+        radio.nextElementSibling.style.border = '3px solid #4CAF50';
+        radio.nextElementSibling.style.background = '#f0fff0';
+    }
+});
+</script>
+{% endblock %}

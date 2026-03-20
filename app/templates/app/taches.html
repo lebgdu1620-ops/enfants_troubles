@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Tâches</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            min-height: 100vh;
+            font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .timer {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            font-size: 1.5rem;
+            padding: 10px 25px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .taches-liste {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .tache-carte {
+            background: white;
+            border-radius: 25px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        
+        .tache-carte:hover {
+            transform: scale(1.02);
+        }
+        
+        .tache-carte.terminee {
+            background: #e8f5e9;
+            opacity: 0.8;
+        }
+        
+        .icone-tache {
+            font-size: 3rem;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .titre-tache {
+            font-size: 1.5rem;
+            color: #333;
+            flex: 1;
+        }
+        
+        .tache-carte.terminee .titre-tache {
+            text-decoration: line-through;
+            color: #888;
+        }
+        
+        .check-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 4px solid #ddd;
+            background: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .check-btn.coche {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+        
+        .btn-recompense {
+            display: block;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 25px;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #f9d423, #ff4e50);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            animation: pulse 1.5s infinite;
+            text-decoration: none;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .btn-logout {
+            display: block;
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            margin-top: 20px;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        
+        .message-fini {
+            text-align: center;
+            font-size: 2rem;
+            color: white;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>{{ enfant.avatar }} {{ enfant.prenom }}</h1>
+    <div class="timer">⏱️ <span id="timer">00:00</span></div>
+</div>
+
+<div class="taches-liste">
+    {% for tache in taches %}
+    <div class="tache-carte {% if tache.terminee %}terminee{% endif %}" id="tache-{{ tache.id }}">
+        <div class="icone-tache">{{ tache.icone }}</div>
+        <div class="titre-tache">{{ tache.titre }}</div>
+        <button class="check-btn {% if tache.terminee %}coche{% endif %}"
+                onclick="cocherTache({{ tache.id }})"
+                {% if tache.terminee %}disabled{% endif %}>
+            {% if tache.terminee %}✅{% else %}⭕{% endif %}
+        </button>
+    </div>
+    {% endfor %}
+</div>
+
+{% if toutes_terminees %}
+<div class="message-fini">🎉 Bravo ! Tu as tout fini ! 🎉</div>
+<a href="{% url 'recompense' %}" class="btn-recompense">🎁 Ma Récompense !</a>
+
+<form method="POST" action="{% url 'relancer' %}" id="form-relancer">
+    {% csrf_token %}
+    <input type="hidden" name="temps" id="temps-final" value="0">
+    <button type="submit" style="display:block; width:100%; max-width:600px; margin:10px auto; padding:15px; font-size:1.2rem; background:rgba(255,255,255,0.3); color:white; border:2px solid white; border-radius:20px; cursor:pointer;">
+        🔄 Recommencer les tâches
+    </button>
+</form>
+{% endif %}
+
+<a href="{% url 'logout' %}" class="btn-logout">Quitter 👋</a>
+
+<script>
+    // Timer
+    let secondes = 0;
+    const timerEl = document.getElementById('timer');
+    
+    setInterval(() => {
+        secondes++;
+        const m = String(Math.floor(secondes / 60)).padStart(2, '0');
+        const s = String(secondes % 60).padStart(2, '0');
+        timerEl.textContent = m + ':' + s;
+        
+        const input = document.getElementById('temps-final');
+        if (input) input.value = secondes;
+    }, 1000);
+    
+    // Cocher une tâche
+    function cocherTache(id) {
+        fetch(`/cocher/${id}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const carte = document.getElementById('tache-' + id);
+                carte.classList.add('terminee');
+                const btn = carte.querySelector('.check-btn');
+                btn.classList.add('coche');
+                btn.innerHTML = '✅';
+                btn.disabled = true;
+                
+                // Animation
+                carte.style.transform = 'scale(1.05)';
+                setTimeout(() => carte.style.transform = '', 300);
+                
+                if (data.toutes_terminees) {
+                    setTimeout(() => location.reload(), 500);
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

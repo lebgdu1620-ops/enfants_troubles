@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com;">
+    <title>Bravo {{ enfant.prenom }} ! 🎉</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        #confettis {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .confetti {
+            position: absolute;
+            top: -20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            animation: tomber linear infinite;
+        }
+
+        @keyframes tomber {
+            0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        .carte {
+            position: relative;
+            z-index: 1;
+            background: white;
+            border-radius: 25px;
+            padding: 30px 25px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: apparaitre 0.6s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px auto;
+        }
+
+        @keyframes apparaitre {
+            from { transform: scale(0.5); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+
+        .titre {
+            font-size: 2rem;
+            color: #f5576c;
+        }
+
+        .sous-titre {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .pat-img {
+            width: 200px;
+            margin: 0 auto;
+            animation: flotter 2s ease-in-out infinite;
+        }
+
+        @keyframes flotter {
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-10px); }
+        }
+
+        .etoiles {
+            font-size: 2rem;
+        }
+
+        .section-video h3 {
+            font-size: 1.2rem;
+            color: #444;
+            margin-bottom: 10px;
+        }
+
+        .section-video iframe {
+            width: 100%;
+            height: 250px;
+            border-radius: 15px;
+            border: none;
+        }
+
+        .btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-recommencer {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-retour {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="confettis"></div>
+
+    <div class="carte">
+        <div class="titre">🎉 Bravo {{ enfant.prenom }} ! 🎉</div>
+
+        <div class="etoiles">⭐⭐⭐</div>
+
+        <div class="sous-titre">Tu as super bien travaillé aujourd'hui !</div>
+
+        <img 
+            class="pat-img"
+            src="{% static 'images/pat_patrouille.webp' %}"
+            alt="Pat Patrouille"
+        >
+
+        <div class="section-video">
+            <h3>🎬 Ta vidéo surprise !</h3>
+            <iframe
+                id="video-enfant"
+                src=""
+                allowfullscreen
+                allow="autoplay; encrypted-media"
+            ></iframe>
+        </div>
+
+        <div class="btns">
+            <a href="{% url 'recommencer' enfant.id %}" class="btn-recommencer">
+                🔄 Recommencer
+            </a>
+            <a href="{% url 'choisir_enfant' %}" class="btn-retour">
+                ← Changer d'enfant
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Confettis
+        const couleurs = ['#f5576c','#f093fb','#667eea','#ffd700','#00d2ff','#43e97b'];
+        const container = document.getElementById('confettis');
+
+        for (let i = 0; i < 80; i++) {
+            const c = document.createElement('div');
+            c.classList.add('confetti');
+            c.style.left              = Math.random() * 100 + 'vw';
+            c.style.width             = (Math.random() * 10 + 6) + 'px';
+            c.style.height            = (Math.random() * 10 + 6) + 'px';
+            c.style.background        = couleurs[Math.floor(Math.random() * couleurs.length)];
+            c.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            c.style.animationDelay    = (Math.random() * 4) + 's';
+            container.appendChild(c);
+        }
+
+       
+        const videos = [
+    		'https://www.youtube.com/embed/SbwGNgQfHOs', 
+    		'https://www.youtube.com/embed/9fQ5bW-bTig',  
+    		'https://www.youtube.com/embed/stIBIJJm8OM',
+    		'https://www.youtube.com/embed/WcUXQ-z6A3A', 
+    		'https://www.youtube.com/embed/zZVIodGfxog', 
+    		'https://www.youtube.com/embed/7k-XVgujDzo',
+];
+
+        const videoAleatoire = videos[Math.floor(Math.random() * videos.length)];
+        document.getElementById('video-enfant').src = videoAleatoire + '?autoplay=1';
+    </script>
+
+</body>
+</html>

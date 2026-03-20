@@ -1,0 +1,42 @@
+{% extends 'app/base.html' %}
+{% block titre %}Accueil{% endblock %}
+{% block content %}
+<div class="carte" style="text-align:center; margin-top:30px;">
+    <h1 style="font-size:2.5rem;">🌟 Mes Tâches du Jour 🌟</h1>
+    <p style="font-size:1.2rem; color:#666; margin:15px 0 25px;">
+        Qui es-tu ?
+    </p>
+
+    <div style="display:flex; flex-wrap:wrap;
+                justify-content:center; gap:20px; margin-bottom:30px;">
+        {% for enfant in enfants %}
+        <a href="{% url 'selection_taches' enfant.id %}"
+           style="text-decoration:none;">
+            <div style="
+                background: linear-gradient(135deg, #f093fb, #f5576c);
+                border-radius: 20px;
+                padding: 25px 35px;
+                color: white;
+                transition: transform 0.3s;
+                min-width: 140px;
+                text-align: center;
+            " onmouseover="this.style.transform='scale(1.1)'"
+               onmouseout="this.style.transform='scale(1)'">
+                <div style="font-size:4rem;">{{ enfant.avatar }}</div>
+                <div style="font-size:1.4rem; font-weight:bold; margin-top:8px;">
+                    {{ enfant.prenom }}
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <p style="color:#666; font-size:1.2rem;">
+            Aucun profil créé pour l'instant
+        </p>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'creer_profil' %}" class="btn btn-bleu">
+        ➕ Nouveau profil
+    </a>
+</div>
+{% endblock %}

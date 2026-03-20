@@ -1,0 +1,94 @@
+{% extends 'app/base.html' %}
+{% block titre %}Choisir les tâches{% endblock %}
+{% block content %}
+<div class="carte" style="margin-top:20px;">
+    <h1>🎯 Tâches pour {{ enfant.prenom }}</h1>
+    <p style="color:#666; font-size:1.1rem; margin-bottom:20px;">
+        Choisissez <strong>1 à 5 tâches</strong>
+    </p>
+
+    {% if erreur %}
+    <div style="background:#ffebee; border:2px solid #f44336;
+                border-radius:10px; padding:15px; margin-bottom:20px;
+                color:#f44336; font-size:1.1rem;">
+        ⚠️ {{ erreur }}
+    </div>
+    {% endif %}
+
+    <form method="POST" id="formTaches">
+        {% csrf_token %}
+        <div style="display:grid;
+                    grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+                    gap:15px; margin-bottom:25px;">
+            {% for tache in taches %}
+            <label style="cursor:pointer;">
+                <input type="checkbox" name="taches" value="{{ tache.id }}"
+                       class="cb-tache" style="display:none;">
+                <div class="carte-tache" style="
+                    border: 3px solid #ddd;
+                    border-radius: 15px;
+                    padding: 20px;
+                    text-align: center;
+                    transition: all 0.3s;
+                    background: white;
+                    height: 150px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <div style="font-size:3rem;">{{ tache.image }}</div>
+                    <div style="font-size:1rem; font-weight:bold;
+                                margin-top:8px; color:#333;">
+                        {{ tache.titre }}
+                    </div>
+                </div>
+            </label>
+            {% endfor %}
+        </div>
+
+        <div style="text-align:center;">
+            <div id="compteur" style="font-size:1.3rem; color:#666;
+                                       margin-bottom:15px;">
+                0 / 5 tâches sélectionnées
+            </div>
+            <button type="submit" class="btn btn-vert"
+                    id="btnCommencer" disabled>
+                🚀 Commencer !
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const cbs = document.querySelectorAll('.cb-tache');
+const compteur = document.getElementById('compteur');
+const btn = document.getElementById('btnCommencer');
+
+cbs.forEach(cb => {
+    cb.addEventListener('change', function() {
+        const checked = document.querySelectorAll('.cb-tache:checked');
+        const n = checked.length;
+
+        cbs.forEach(c => { if (!c.checked) c.disabled = n >= 5; });
+
+        compteur.textContent = `${n} / 5 tâches sélectionnées`;
+        compteur.style.color = n > 0 ? '#4CAF50' : '#666';
+        btn.disabled = n === 0;
+
+        const card = this.closest('label').querySelector('.carte-tache');
+        if (this.checked) {
+            card.style.border = '3px solid #4CAF50';
+            card.style.background = '#f0fff0';
+            card.style.transform = 'scale(1.05)';
+        } else {
+            card.style.border = '3px solid #ddd';
+            card.style.background = 'white';
+            card.style.transform = 'scale(1)';
+        }
+    });
+});
+</script>
+{% endblock %}
