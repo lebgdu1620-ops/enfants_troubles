@@ -1,0 +1,24 @@
+{
+  "name": "enfants_troubles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lebgdu1620-ops/enfants_troubles.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lebgdu1620-ops/enfants_troubles/issues"
+  },
+  "homepage": "https://github.com/lebgdu1620-ops/enfants_troubles#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
